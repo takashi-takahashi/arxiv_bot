@@ -16,7 +16,7 @@ HOOK_DICTIONARY = {
     "cs.LG": WEB_HOOK_URL_CS_LG,
     "cond-mat.dis-nn": WEB_HOOK_URL_DIS_NN,
     "cond-mat.stat-mech": WEB_HOOK_URL_STAT_MECH,
-    "stat.ml": WEB_HOOK_URL_STAT_ML
+    "stat.ML": WEB_HOOK_URL_STAT_ML
 }
 
 
