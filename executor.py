@@ -51,16 +51,16 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     Returns:
         None
     """
+
+    rss_url = 'http://export.arxiv.org/rss/{0}'.format(term)
+    rss_atom = feedparser.parse(rss_url)
+    http_keys = []
+    for entry in rss_atom["entries"]:
+        http_keys.append(entry["link"])
+
     query = "cat:{0}&start=0&max_results={1}&sortBy=lastUpdatedDate&".format(term, max_num_of_results)
     url = "http://export.arxiv.org/api/query?search_query=" + query
     atom = feedparser.parse(url)
-
-    day = datetime.now().day
-    weekday = datetime.now().isoweekday()
-    if weekday == 1:
-        diff = 3
-    else:
-        diff = 1
 
     text = "\n".join([
         "=" * 100,
@@ -69,52 +69,56 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     ])
     requests.post(WEB_HOOK_URL, json={"text": text})
     for index, entry in enumerate(atom["entries"]):
-        if entry["updated_parsed"][2] == (day - diff):
-            title = entry["title"].replace("\n", "").replace("\n", "").replace("\n", "")
-            print(title)
+        for key_url in http_keys:
+            if entry["id"].count(key_url):
+                http_keys.remove(key_url)
 
-            author_name_list = []
-            for author in entry["authors"]:
-                author_name_list.append(author["name"])
-            author_names = "    " + ", ".join(author_name_list)
+                title = entry["title"].replace("\n", "").replace("\n", "").replace("\n", "")
+                print(title)
 
-            link_url = entry["id"]
+                author_name_list = []
+                for author in entry["authors"]:
+                    author_name_list.append(author["name"])
+                author_names = "    " + ", ".join(author_name_list)
 
-            if "arxiv_comment" in entry.keys():
-                comment = entry["arxiv_comment"]
-            else:
-                comment = "None"
+                link_url = entry["id"]
 
-            summary = entry["summary"]
+                if "arxiv_comment" in entry.keys():
+                    comment = entry["arxiv_comment"]
+                else:
+                    comment = "None"
 
-            texts = "\n".join([
-                # "#" * 40,
-                # "*No. {0}*".format(index + 1),
-                # "*TITLE: " + title + "*",
-                "*<{0}|{1}>*".format(link_url, title),
-                author_names,
-                "\n",
-                # "   URL: " + link_url,
-                # "COMMENT: " + comment,
-                "   " + summary
-            ])
-            requests.post(WEB_HOOK_URL,
-                          json={
-                              "attachments": [
-                                  {
-                                      # "title": "*{0}*".format(title),
-                                      "pretext": "*No.{0} ({1}):*".format(index + 1, term),
-                                      "text": texts,
-                                      "mrkdwn_in": [
-                                          "text",
-                                          "pretext",
-                                          "title"
-                                      ]
-                                  }
-                              ]
-                          }
-                          )
-            requests.post(WEB_HOOK_URL, json={"text": "-" * 10})
+                summary = entry["summary"]
+
+                print(link_url)
+                texts = "\n".join([
+                    # "#" * 40,
+                    # "*No. {0}*".format(index + 1),
+                    # "*TITLE: " + title + "*",
+                    "*<{0}|{1}>*".format(link_url, title),
+                    author_names,
+                    "\n",
+                    # "   URL: " + link_url,
+                    # "COMMENT: " + comment,
+                    "   " + summary
+                ])
+                requests.post(WEB_HOOK_URL,
+                              json={
+                                  "attachments": [
+                                      {
+                                          # "title": "*{0}*".format(title),
+                                          "pretext": "*No.{0} ({1}):*".format(index + 1, term),
+                                          "text": texts,
+                                          "mrkdwn_in": [
+                                              "text",
+                                              "pretext",
+                                              "title"
+                                          ]
+                                      }
+                                  ]
+                              }
+                              )
+                requests.post(WEB_HOOK_URL, json={"text": "-" * 10})
 
 
 if __name__ == "__main__":
