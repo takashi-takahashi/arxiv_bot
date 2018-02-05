@@ -2,7 +2,6 @@ import requests
 from datetime import datetime
 import feedparser
 
-
 # appropriately set these url
 WEB_HOOK_URL_ALL = ""
 WEB_HOOK_URL_CS_IT = ""
@@ -35,10 +34,10 @@ def main():
 
             for term in term_list:
                 find_new_articles(url, term=term)
-            requests.post(WEB_HOOK_URL_ALL, json={"text": "END"})
+            requests.post(WEB_HOOK_URL_ALL, json={"text": "###### END ######"})
         else:
             find_new_articles(url, term=key)
-            requests.post(url, json={"text": "END"})
+            requests.post(url, json={"text": "###### END ######"})
 
 
 def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
@@ -57,6 +56,12 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     atom = feedparser.parse(url)
 
     day = datetime.now().day
+    weekday = datetime.now().isoweekday()
+    if weekday == 1:
+        diff = 3
+    else:
+        diff = 1
+
     text = "\n".join([
         "=" * 100,
         "*{0} : {1}*".format(datetime.now().strftime("%Y/%m/%d"), term),
@@ -64,9 +69,9 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     ])
     requests.post(WEB_HOOK_URL, json={"text": text})
     for index, entry in enumerate(atom["entries"]):
-        # if entry["updated_parsed"][2] == (day - 1):
-        if entry["updated_parsed"][2] == (day - 2):
+        if entry["updated_parsed"][2] == (day - diff):
             title = entry["title"].replace("\n", "").replace("\n", "").replace("\n", "")
+            print(title)
 
             author_name_list = []
             for author in entry["authors"]:
