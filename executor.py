@@ -63,9 +63,9 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     atom = feedparser.parse(url)
 
     text = "\n".join([
-        "=" * 100,
+        "=" * 50,
         "*{0} : {1}*".format(datetime.now().strftime("%Y/%m/%d"), term),
-        "=" * 100
+        "=" * 50
     ])
     requests.post(WEB_HOOK_URL, json={"text": text})
     for index, entry in enumerate(atom["entries"]):
