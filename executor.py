@@ -63,11 +63,12 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     atom = feedparser.parse(url)
 
     text = "\n".join([
-        "=" * 50,
+        "=" * 100,
         "*{0} : {1}*".format(datetime.now().strftime("%Y/%m/%d"), term),
-        "=" * 50
+        "=" * 100
     ])
     requests.post(WEB_HOOK_URL, json={"text": text})
+    counter = 1
     for index, entry in enumerate(atom["entries"]):
         for key_url in http_keys:
             if entry["id"].count(key_url):
@@ -107,7 +108,7 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
                                   "attachments": [
                                       {
                                           # "title": "*{0}*".format(title),
-                                          "pretext": "*No.{0} ({1}):*".format(index + 1, term),
+                                          "pretext": "*No.{0} ({1}):*".format(counter, term),
                                           "text": texts,
                                           "mrkdwn_in": [
                                               "text",
@@ -119,6 +120,7 @@ def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
                               }
                               )
                 requests.post(WEB_HOOK_URL, json={"text": "-" * 10})
+                counter += 1
 
 
 if __name__ == "__main__":
