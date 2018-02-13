@@ -9,13 +9,15 @@ WEB_HOOK_URL_CS_LG = ""
 WEB_HOOK_URL_DIS_NN = ""
 WEB_HOOK_URL_STAT_MECH = ""
 WEB_HOOK_URL_STAT_ML = ""
+WEB_HOOK_URL_MATH_PR = ""
 
 HOOK_DICTIONARY = {
     "cs.IT": WEB_HOOK_URL_CS_IT,
     "cs.LG": WEB_HOOK_URL_CS_LG,
     "cond-mat.dis-nn": WEB_HOOK_URL_DIS_NN,
     "cond-mat.stat-mech": WEB_HOOK_URL_STAT_MECH,
-    "stat.ML": WEB_HOOK_URL_STAT_ML
+    "stat.ML": WEB_HOOK_URL_STAT_ML,
+    "math.PR": WEB_HOOK_URL_MATH_PR
 }
 
 
@@ -26,12 +28,13 @@ def main():
         requests.post(url, json={"text": "###### END ######"})
 
 
-def find_new_articles(WEB_HOOK_URL, term):
+def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
     """find new articles and send title, authors and summary to slack
 
     Args:
         WEB_HOOK_URL: slack web hook url
         term: field
+        max_num_of_results: max number of results
 
     Returns:
         None
@@ -49,7 +52,6 @@ def find_new_articles(WEB_HOOK_URL, term):
 
     for index, entry in enumerate(rss_atom["entries"]):
         title = entry["title"].replace("\n", "")
-        print(title)
 
         link_url = entry["id"]
 
