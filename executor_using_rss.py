@@ -28,13 +28,12 @@ def main():
         requests.post(url, json={"text": "###### END ######"})
 
 
-def find_new_articles(WEB_HOOK_URL, term, max_num_of_results=100):
+def find_new_articles(WEB_HOOK_URL, term):
     """find new articles and send title, authors and summary to slack
 
     Args:
         WEB_HOOK_URL: slack web hook url
         term: field
-        max_num_of_results: max number of results
 
     Returns:
         None
